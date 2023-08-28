@@ -5,7 +5,7 @@ from difflib import SequenceMatcher
 from docx import Document
 from io import BytesIO
 import fitz  # PyMuPDF
-import bcrypt
+# import bcrypt
 import base64
 
 
