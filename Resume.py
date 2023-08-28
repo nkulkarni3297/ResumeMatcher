@@ -10,9 +10,9 @@ import base64
 
 
 # Set your OpenAI API key here
-with st.sidebar:    
-        openai.api_key = st.text_input("Add your OpenAI API key", type = "password")
-data=[]
+with st.sidebar:
+    st.write("Sidebar")
+    openai.api_key = st.text_input('Add your OpenAI API Key', type='password')
 
 # Function to calculate similarity ratio between strings
 def similarity_ratio(a, b):
