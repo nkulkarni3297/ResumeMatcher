@@ -54,7 +54,7 @@ if st.button("Generate Report"):
     elif job_description_file.type == "application/pdf":
                 pdf = fitz.open(stream=job_description_content, filetype="pdf")
                 job_description = ""
-     for page_num in range(pdf.page_count):
+    for page_num in range(pdf.page_count):
                     page = pdf[page_num]
                     job_description += page.get_text()
      else:
