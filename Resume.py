@@ -36,10 +36,10 @@ job_description_file = st.file_uploader("Upload Job Description", type=["txt", "
 
 # File upload for resume
 resume_files = st.file_uploader("Upload Your Resume", type=["txt", "pdf", "docx"],accept_multiple_files=True)
-button_clicked = False
 if st.button("Generate Report"):
-    # When the button is clicked, set the variable to True
-    button_clicked = True
+    # Check if no files are selected
+    if len(resume_files) == 0:
+        st.write("Please Select File")
     
     # Read content from the uploaded job description file
     
@@ -89,10 +89,6 @@ if st.button("Generate Report"):
     generated_resume = get_completion(input_text)
     data.append({"Name": resume_file.name, "Match percentage": generated_resume})
     i = i + 1
-
-if len(resume_files) == 0 and button_clicked:
-    st.write("Please Select File")
-else:
     df = pd.DataFrame(data)
     st.write(df)
 
