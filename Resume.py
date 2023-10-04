@@ -57,7 +57,7 @@ if st.button("Generate Report"):
     for page_num in range(pdf.page_count):
                     page = pdf[page_num]
                     job_description += page.get_text()
-     else:
+    else:
                 # Assume it's a text file
                 job_description = job_description_content.decode("utf-8")
 
