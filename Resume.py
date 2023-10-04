@@ -61,38 +61,40 @@ if st.button("Generate Report") and (job_description_file or job_description) is
 
     # for resume_file in resume_files: 
     i=0
-    while i<len(resume_files):   
-        # Read content from the uploaded resume file
-        resume_file=resume_files[i]
-        resume_content = resume_file.read()
-        
-        # Check if it's a DOCX file
-        if resume_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-            doc = Document(BytesIO(resume_content))
-            resume_input = "\n".join(para.text for para in doc.paragraphs)
-        elif resume_file.type == "application/pdf":
-            pdf = fitz.open(stream=resume_content, filetype="pdf")
-            resume_input = ""
-            for page_num in range(pdf.page_count):
-                page = pdf[page_num]
-                resume_input += page.get_text()
-        else:
-            # Assume it's a text file
-            resume_input = resume_content.decode("utf-8")
+   while i < len(resume_files):
+    # Read content from the uploaded resume file
+    resume_file = resume_files[i]
+    resume_content = resume_file.read()
 
-    
-        input_text = f""" Your task is to compare the resume with the job_description provided. Provide the results in terms of the percentage of suitability for the job. And provide me the reason on what basis you have provided the percentage.
-                job_description :{job_description}
-                resume: {resume_input}
-            """
-        generated_resume = get_completion(input_text)
-        data.append({"Name":resume_file.name ,"Match percentage":generated_resume})
-        i=i+1
+    # Check if it's a DOCX file
+    if resume_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        doc = Document(BytesIO(resume_content))
+        resume_input = "\n".join(para.text for para in doc.paragraphs)
+    elif resume_file.type == "application/pdf":
+        pdf = fitz.open(stream=resume_content, filetype="pdf")
+        resume_input = ""
+        for page_num in range(pdf.page_count):
+            page = pdf[page_num]
+            resume_input += page.get_text()
+    else:
+        # Assume it's a text file
+        resume_input = resume_content.decode("utf-8")
+
+    input_text = f""" Your task is to compare the resume with the job_description provided. Provide the results in terms of the percentage of suitability for the job. And provide me the reason on what basis you have provided the percentage.
+            job_description: {job_description}
+            resume: {resume_input}
+        """
+    generated_resume = get_completion(input_text)
+    data.append({"Name": resume_file.name, "Match percentage": generated_resume})
+    i = i + 1
+
+if len(resume_files) == 0:
+    st.write("Please Select File")
+else:
     df = pd.DataFrame(data)
     st.write(df)
-    
+
     csv = df.to_csv(index=False)
     b64 = base64.b64encode(csv.encode()).decode()  # Encode to base64
     href = f'<a href="data:file/csv;base64,{b64}" download="data.csv"> Click On For Download CSV File</a>'
     st.markdown(href, unsafe_allow_html=True)
-
