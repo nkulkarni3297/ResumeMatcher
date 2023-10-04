@@ -6,7 +6,7 @@ from docx import Document
 from io import BytesIO
 import fitz  # PyMuPDF
 import base64
-
+import magic  # Import the magic library
 
 # Set your OpenAI API key here
 with st.sidebar:
@@ -30,27 +30,30 @@ def get_completion(prompt, model="gpt-3.5-turbo-16k"):
 
 st.title("Resume Matcher")
 
-job_description= st.text_area("Enter Job Description")
+job_description = st.text_area("Enter Job Description")
 # File upload for job description
 job_description_file = st.file_uploader("Upload Job Description", type=["txt", "pdf", "docx"])
 
 # File upload for resume
-resume_files = st.file_uploader("Upload Your Resume", type=["txt", "pdf", "docx"],accept_multiple_files=True)
+resume_files = st.file_uploader("Upload Your Resume", type=["txt", "pdf", "docx"], accept_multiple_files=True)
+
 if st.button("Generate Report"):
     # Check if no files are selected
     if len(resume_files) == 0:
         st.write("Please Select File")
-    
-    # Read content from the uploaded job description file
-    
-    
-    # Check if it's a DOCX file
-    if job_description_file is not None:
+    else:
+        # Read content from the uploaded job description file
+        if job_description_file is not None:
             job_description_content = job_description_file.read()
-            if job_description_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+
+            # Use the magic library to get the MIME type
+            mime = magic.Magic()
+            job_description_mime_type = mime.from_buffer(job_description_content)
+
+            if job_description_mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
                 doc = Document(BytesIO(job_description_content))
                 job_description = "\n".join(para.text for para in doc.paragraphs)
-            elif job_description_file.type == "application/pdf":
+            elif job_description_mime_type == "application/pdf":
                 pdf = fitz.open(stream=job_description_content, filetype="pdf")
                 job_description = ""
                 for page_num in range(pdf.page_count):
@@ -60,40 +63,41 @@ if st.button("Generate Report"):
                 # Assume it's a text file
                 job_description = job_description_content.decode("utf-8")
 
+        i = 0
+        while i < len(resume_files):
+            # Read content from the uploaded resume file
+            resume_file = resume_files[i]
+            resume_content = resume_file.read()
 
-    # for resume_file in resume_files: 
-    i=0
-    while i < len(resume_files):
-    # Read content from the uploaded resume file
-        resume_file = resume_files[i]
-        resume_content = resume_file.read()
-        resume_mime_type = resume_file.mime_type
+            # Use the magic library to get the MIME type
+            mime = magic.Magic()
+            resume_mime_type = mime.from_buffer(resume_content)
 
-    # Check if it's a DOCX file
-    if resume_mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            if resume_mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
                 doc = Document(BytesIO(resume_content))
                 resume_input = "\n".join(para.text for para in doc.paragraphs)
-    elif resume_mime_type == "application/pdf":
+            elif resume_mime_type == "application/pdf":
                 pdf = fitz.open(stream=resume_content, filetype="pdf")
                 resume_input = ""
-    for page_num in range(pdf.page_count):
-            page = pdf[page_num]
-            resume_input += page.get_text()
-    else:
-        # Assume it's a text file
-        resume_input = resume_content.decode("utf-8")
+                for page_num in range(pdf.page_count):
+                    page = pdf[page_num]
+                    resume_input += page.get_text()
+            else:
+                # Assume it's a text file
+                resume_input = resume_content.decode("utf-8")
 
-    input_text = f""" Your task is to compare the resume with the job_description provided. Provide the results in terms of the percentage of suitability for the job. And provide me the reason on what basis you have provided the percentage.
-            job_description: {job_description}
-            resume: {resume_input}
-        """
-    generated_resume = get_completion(input_text)
-    data.append({"Name": resume_file.name, "Match percentage": generated_resume})
-    i = i + 1
-    df = pd.DataFrame(data)
-    st.write(df)
+            input_text = f""" Your task is to compare the resume with the job_description provided. Provide the results in terms of the percentage of suitability for the job. And provide me the reason on what basis you have provided the percentage.
+                    job_description: {job_description}
+                    resume: {resume_input}
+                """
+            generated_resume = get_completion(input_text)
+            data.append({"Name": resume_file.name, "Match percentage": generated_resume})
+            i = i + 1
 
-    csv = df.to_csv(index=False)
-    b64 = base64.b64encode(csv.encode()).decode()  # Encode to base64
-    href = f'<a href="data:file/csv;base64,{b64}" download="data.csv"> Click On For Download CSV File</a>'
-    st.markdown(href, unsafe_allow_html=True)
+        df = pd.DataFrame(data)
+        st.write(df)
+
+        csv = df.to_csv(index=False)
+        b64 = base64.b64encode(csv.encode()).decode()  # Encode to base64
+        href = f'<a href="data:file/csv;base64,{b64}" download="data.csv"> Click On For Download CSV File</a>'
+        st.markdown(href, unsafe_allow_html=True)
