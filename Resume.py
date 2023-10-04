@@ -61,7 +61,7 @@ if st.button("Generate Report") and (job_description_file or job_description) is
 
     # for resume_file in resume_files: 
     i=0
-   while i < len(resume_files):
+    while i < len(resume_files):
     # Read content from the uploaded resume file
     resume_file = resume_files[i]
     resume_content = resume_file.read()
