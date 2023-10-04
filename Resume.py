@@ -6,6 +6,8 @@ from docx import Document
 from io import BytesIO
 import fitz  # PyMuPDF
 import base64
+import mimetypes
+import magic
 
 # Set your OpenAI API key here
 with st.sidebar:
