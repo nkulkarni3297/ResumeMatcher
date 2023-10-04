@@ -63,8 +63,8 @@ if st.button("Generate Report") and (job_description_file or job_description) is
     i=0
     while i < len(resume_files):
     # Read content from the uploaded resume file
-    resume_file = resume_files[i]
-    resume_content = resume_file.read()
+        resume_file = resume_files[i]
+        resume_content = resume_file.read()
 
     # Check if it's a DOCX file
     if resume_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
