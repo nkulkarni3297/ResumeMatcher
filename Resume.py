@@ -67,7 +67,7 @@ if st.button("Generate Report"):
     # Read content from the uploaded resume file
         resume_file = resume_files[i]
         resume_content = resume_file.read()
-        resume_mime_type = resume_file.type
+        resume_mime_type = resume_file.mime_type
 
     # Check if it's a DOCX file
     if resume_mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
