@@ -67,15 +67,16 @@ if st.button("Generate Report"):
     # Read content from the uploaded resume file
         resume_file = resume_files[i]
         resume_content = resume_file.read()
+        resume_mime_type = resume_file.type
 
     # Check if it's a DOCX file
-    if resume_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        doc = Document(BytesIO(resume_content))
-        resume_input = "\n".join(para.text for para in doc.paragraphs)
-    elif resume_file.type == "application/pdf":
-        pdf = fitz.open(stream=resume_content, filetype="pdf")
-        resume_input = ""
-        for page_num in range(pdf.page_count):
+     if resume_mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                doc = Document(BytesIO(resume_content))
+                resume_input = "\n".join(para.text for para in doc.paragraphs)
+    elif resume_mime_type == "application/pdf":
+                pdf = fitz.open(stream=resume_content, filetype="pdf")
+                resume_input = ""
+    for page_num in range(pdf.page_count):
             page = pdf[page_num]
             resume_input += page.get_text()
     else:
