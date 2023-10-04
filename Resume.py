@@ -70,7 +70,7 @@ if st.button("Generate Report"):
         resume_mime_type = resume_file.type
 
     # Check if it's a DOCX file
-     if resume_mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    if resume_mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
                 doc = Document(BytesIO(resume_content))
                 resume_input = "\n".join(para.text for para in doc.paragraphs)
     elif resume_mime_type == "application/pdf":
