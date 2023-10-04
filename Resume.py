@@ -6,8 +6,8 @@ from docx import Document
 from io import BytesIO
 import fitz  # PyMuPDF
 import base64
-import mimetypes
-
+import magic  # Import the magic library
+import mimetypes  # Import the mimetypes library
 
 # Set your OpenAI API key here
 with st.sidebar:
@@ -46,7 +46,10 @@ if st.button("Generate Report"):
         # Read content from the uploaded job description file
         if job_description_file is not None:
             job_description_content = job_description_file.read()
-            job_description_mime_type = job_description_file.type  # Get the MIME type
+
+            # Use the magic library to get the MIME type
+            mime = magic.Magic()
+            job_description_mime_type = mime.from_buffer(job_description_content)
 
             if job_description_mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
                 doc = Document(BytesIO(job_description_content))
@@ -66,7 +69,9 @@ if st.button("Generate Report"):
             # Read content from the uploaded resume file
             resume_file = resume_files[i]
             resume_content = resume_file.read()
-            resume_mime_type = resume_file.mime_type  # Get the MIME type
+
+            # Use the mimetypes library to get the MIME type
+            resume_mime_type, _ = mimetypes.guess_type(resume_file.name)
 
             if resume_mime_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
                 doc = Document(BytesIO(resume_content))
