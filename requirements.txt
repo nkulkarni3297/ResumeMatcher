@@ -2,3 +2,4 @@ openai==0.27.8
 pyMuPDF==1.22.5
 pandas==2.0.3
 python-docx==0.8.11
+python-magic==0.4.27
