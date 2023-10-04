@@ -37,7 +37,10 @@ job_description_file = st.file_uploader("Upload Job Description", type=["txt", "
 # File upload for resume
 resume_files = st.file_uploader("Upload Your Resume", type=["txt", "pdf", "docx"],accept_multiple_files=True)
 
-if st.button("Generate Report") and (job_description_file or job_description) is not None and resume_files is not None:
+if st.button("Generate Report"):
+    # Check if no files are selected
+    if len(resume_files) == 0:
+        st.write("Please Select File")
     
     # Read content from the uploaded job description file
     
