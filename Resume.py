@@ -48,18 +48,18 @@ if st.button("Generate Report"):
     # Check if it's a DOCX file
     if job_description_file is not None:
             job_description_content = job_description_file.read()
-    if job_description_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-                doc = Document(BytesIO(job_description_content))
-                job_description = "\n".join(para.text for para in doc.paragraphs)
-    elif job_description_file.type == "application/pdf":
-                pdf = fitz.open(stream=job_description_content, filetype="pdf")
-                job_description = ""
-    for page_num in range(pdf.page_count):
-                    page = pdf[page_num]
-                    job_description += page.get_text()
-    else:
-                # Assume it's a text file
-                job_description = job_description_content.decode("utf-8")
+            if job_description_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                        doc = Document(BytesIO(job_description_content))
+                        job_description = "\n".join(para.text for para in doc.paragraphs)
+            elif job_description_file.type == "application/pdf":
+                        pdf = fitz.open(stream=job_description_content, filetype="pdf")
+                        job_description = ""
+                        for page_num in range(pdf.page_count):
+                            page = pdf[page_num]
+                            job_description += page.get_text()
+            else:
+                        # Assume it's a text file
+                        job_description = job_description_content.decode("utf-8")
 
 
     # for resume_file in resume_files: 
